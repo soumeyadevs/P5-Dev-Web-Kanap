@@ -85,3 +85,18 @@ fetch(KanapAPI)
         )
     }
 );
+
+// Convertir en {object} pour insérer dans le LocalStorage
+function productFormat (data) {
+    return productFormated = {
+    _id: data._id,
+    color: colors.value,
+    qty: parseInt(qty.value)
+    };
+};
+
+//  Ajout au panier d'un produit
+function cartUpdate (product) {
+    localStorage.setItem('cart', JSON.stringify(product));
+    let cartList = localStorage.getItem('cart');
+}
