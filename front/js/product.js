@@ -43,8 +43,8 @@ fetch(KanapAPI)
                     let valueCart = JSON.parse(cartList);
                     console.log(valueCart);
                     let returnCart = valueCart.find(contentValue => contentValue._id === id && contentValue.color === colors.value);
-                    let idExist = valueCart.find(contentValue => contentValue._id === id);
-                    if (idExist) {
+                    //let idExist = valueCart.find(contentValue => contentValue._id === id);
+                    //if (idExist) {
                         if (returnCart) {
                             const checkQty = returnCart.qty + parseInt(qty.value);
                             if(checkQty > 100) {
@@ -64,12 +64,12 @@ fetch(KanapAPI)
                             qty.value = 1;
                         }
                         cartUpdate(valueCart);
-                    }
+                    /*}
                     else {
                         valueCart.unshift(productFormat(product));
                         alert("L'article a été ajouté à votre panier.");
                         qty.value = 1;
-                    }
+                    }*/
                     cartUpdate(valueCart);
                 }
                 else {
