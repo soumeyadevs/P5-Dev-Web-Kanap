@@ -14,7 +14,9 @@ const qty = document.querySelector("#quantity");
 
 // Affichage des élements du produits
 fetch(KanapAPI)
+//Demande de repones au format JSON
     .then((res) => res.json())
+// ce que l'on a reçu et qui a été traité en json sera appelé Produits
     .then ((product) => {
         document.querySelector('title').textContent = product.name;
         const insertIMG = document.createElement("img");
@@ -33,6 +35,7 @@ fetch(KanapAPI)
         toCart.addEventListener("click", function() {
             let cartList = localStorage.getItem('cart');
             // Verification qu'une couleur et une quantité sont bien attribué avant de passer à la tache suivante
+            //si on attribut pas de couleur ou quantité inferieur à 1 ou superieur a 100 alors alert
             if(colors.value == "" || qty.value < 1 || qty.value > 100){
                 alert("Veuillez choisir une couleur et une quantité comprise entre 1 et 100")
             }
