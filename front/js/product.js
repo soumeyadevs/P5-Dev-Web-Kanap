@@ -102,4 +102,5 @@ function productFormat (data) {
 function cartUpdate (product) {
     localStorage.setItem('cart', JSON.stringify(product));
     let cartList = localStorage.getItem('cart');
+    window.location.href = "cart.html"
 }
