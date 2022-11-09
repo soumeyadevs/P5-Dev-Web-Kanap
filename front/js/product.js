@@ -1,105 +1,126 @@
-// ROUTE API + Variables globales
-let KanapAPI = "http://localhost:3000/api/products/";
-const currentLocation = window.location;
-const url = new URL(currentLocation);
-const id = url.searchParams.get("id")
-KanapAPI = KanapAPI + id;
-const productIMG = document.querySelector('.item__img');
-const title = document.querySelector('#title');
-const price = document.querySelector('#price');
-const description = document.querySelector('#description');
-const colors = document.querySelector('#colors');
-const toCart = document.querySelector("#addToCart");
-const qty = document.querySelector("#quantity");
+// Récuperer l'id du produit
+let product_id = new URLSearchParams(window.location.search).get("_id");
 
-// Affichage des élements du produits
-fetch(KanapAPI)
-//Demande de repones au format JSON
-    .then((res) => res.json())
-// ce que l'on a reçu et qui a été traité en json sera appelé Produits
-    .then ((product) => {
-        document.querySelector('title').textContent = product.name;
-        const insertIMG = document.createElement("img");
-        insertIMG.setAttribute("src", product.imageUrl)
-        insertIMG.setAttribute("alt", product.altTxt)
-        productIMG.appendChild(insertIMG);
-        title.innerText = product.name;
-        price.innerText = product.price;
-        description.innerText = product.description;
-        for (let addColor of product.colors) {
-            const newColor = document.createElement("option");
-            newColor.setAttribute("value", `${addColor}`);
-            newColor.innerText = addColor;
-            colors.appendChild(newColor);
-        }
-        toCart.addEventListener("click", function() {
-            let cartList = localStorage.getItem('cart');
-            // Verification qu'une couleur et une quantité sont bien attribué avant de passer à la tache suivante
-            //si on attribut pas de couleur ou quantité inferieur à 1 ou superieur a 100 alors alert
-            if(colors.value == "" || qty.value < 1 || qty.value > 100){
-                alert("Veuillez choisir une couleur et une quantité comprise entre 1 et 100")
-            }
-            
-            else{
-                // Verification de l'existance d'un panier
-                if (cartList){
-                    let valueCart = JSON.parse(cartList);
-                    console.log(valueCart);
-                    let returnCart = valueCart.find(contentValue => contentValue._id === id && contentValue.color === colors.value);
-                    //let idExist = valueCart.find(contentValue => contentValue._id === id);
-                    //if (idExist) {
-                        if (returnCart) {
-                            const checkQty = returnCart.qty + parseInt(qty.value);
-                            if(checkQty > 100) {
-                                alert("Vous ne pouvez pas dépasser la quantité de 100 articles pour un produit.");
-                                qty.value = 1;
-                            }
-                            else {
-                            returnCart.qty += parseInt(qty.value);
-                            alert('La quantité de votre articlé dans le panier a été mis à jour');
-                            qty.value = 1;
-                            }
-                        }
-                        else {
-                            let existIndex = valueCart.findIndex(contentValue => contentValue._id === id);
-                            valueCart.splice(existIndex, 0, productFormat(product));
-                            alert("L'article a été ajouté à votre panier.");
-                            qty.value = 1;
-                        }
-                        cartUpdate(valueCart);
-                    /*}
-                    else {
-                        valueCart.unshift(productFormat(product));
-                        alert("L'article a été ajouté à votre panier.");
-                        qty.value = 1;
-                    }*/
-                    cartUpdate(valueCart);
-                }
-                else {
-                    let valueCart = [];
-                    valueCart.push(productFormat(product));
-                    cartUpdate(valueCart);
-                    alert("L'article a été ajouté à votre panier.");
-                    qty.value = 1;
+// Récupérer la donnée du produit grâce à son id
+fetch(`http://localhost:3000/api/products/` + product_id)
+  .then((product) => product.json()) 
+  .then((product) => {
+    displayProductInfos(product);
+    listenColorsEvent();
+    listenQuantityEvent();
+  });
 
-                }
-            }
-        }
-        )
-    }
-);
-
-// Convertir en {object} pour insérer dans le LocalStorage
-function productFormat (data) {
-    return productFormated = {
-    _id: data._id,
-    color: colors.value,
-    qty: parseInt(qty.value)
-    };
+// Initialisation de l'object product_client
+let product_client = { 
+  id : product_id,
+  color : "",
+  quantity : 0
 };
 
-//  Ajout au panier d'un produit
-function cartUpdate (product) {
-    localStorage.setItem('cart', JSON.stringify(product));
-    let cartList = localStorage.getItem('cart');
+// Déclaration des selectors
+let product_img = document.querySelector(".item__img");
+let product_title = document.querySelector("#title");
+let product_price = document.querySelector("#price");
+let product_description = document.querySelector("#description");
+let product_colors = document.querySelector("#colors");
+let product_nb = document.querySelector("#quantity");
+let color_miss = document.querySelector(".item__content");
+
+
+// Afficher les informations du produit avec une boucle for pour les couleurs
+function displayProductInfos(product) {
+  product_img.innerHTML += `<img src="${product.imageUrl}" alt="${product.altTxt}">`;
+  product_title.innerHTML += `<h1 id="title"> ${product.name} </h1>`;
+  product_price.innerHTML += `<span id="price"> ${product.price} </span>`;
+  product_description.innerHTML += `<p id="description"> ${product.description} </p>`;
+  for (let i = 0; i < product.colors.length; i++) {
+    product_colors.innerHTML += `<option value="${product.colors[i]}">${product.colors[i]}</option>`;
+  }
+}
+//------------------------------------------------------------
+
+// Récuperer la valeur de couleur quand celle ci-change
+function listenColorsEvent() {
+  product_colors.addEventListener("change", (event) => {
+    product_client.color = event.target.value;
+    if(product_client.color != 0){
+      document.querySelector(".color__miss").textContent = "";
+    }
+  });
+}
+//------------------------------------------------------------
+
+// Récuperer la value de quantité quand elle change
+function listenQuantityEvent() {
+  product_nb.addEventListener("change", (event) => {
+    product_client.quantity = parseInt(event.target.value);
+    if(product_client.quantity != 0){
+      document.querySelector(".quantity__miss").textContent = "";
+    }
+  });
+}
+//------------------------------------------------------------
+
+// Click sur le bouton ajouter au panier
+let add_cart = document.querySelector("#addToCart");
+add_cart.addEventListener("click", () => {
+  verifyInput(product_client);
+});
+//------------------------------------------------------------
+
+// Vérifier si il y as bien une couleur et une quantite de choisi
+function verifyInput(product_client) {
+  if((product_client.color == "") && (product_client.quantity < 1 || product_client.quantity > 100)){
+    alert("Veuillez choisir une couleur et une quantité comprise entre 1 et 100")
+  } else if (product_client.color == "") {
+    alert("Merci de bien choisir une couleur")
+  } else if (product_client.quantity < 1 || product_client.quantity > 100) {
+    alert("Veuillez choisir une quantité comprise entre 1 et 100")
+  } else {
+    if (addLs(product_client)) {
+      alert("Votre commande viens d'etre ajoutée au panier")
+    } else {
+      excessQuantity();
+    }
+  }
+}
+//------------------------Local storage------------------------------------
+
+// Ajouter le produit au ls et ajoute uniquement la quantité si le produit y est déjà
+/**
+ * Ajout de la quantité si le produit est déjà présent dans le localStorage
+ * get_article récupère le localStorage et vérifie si le produit choisi est déjà présent dans le ls
+ * Si il est déjà présent ajout de get_article.quantity à product_client.quantity
+ * Si le produit n'est pas présent dans le localStorage il l'ajoute directement dans le ls
+ */
+//Déclaration de la variable ''cart'' dans laquelle on met la clé et les valeurs qui sont dans le LS
+// JSON.parse : pour convertir les données au format JSON qui sont dans le LS en objet JS
+function addLs(product_client) {
+  let cart = JSON.parse(localStorage.getItem("product_client")); // console.log(cart);
+ 
+  if (cart == null) {
+    cart = [];
+    cart.push(product_client);
+    localStorage.setItem("product_client", JSON.stringify(cart));
+  } else {
+    let get_article = cart.find((cart_product) => product_client.id == cart_product.id && product_client.color == cart_product.color);
+    if (get_article) {
+      let nb = Number(product_client.quantity) + Number(get_article.quantity);
+      if (nb < 101){
+      get_article.quantity = nb;
+      localStorage.setItem("product_client", JSON.stringify(cart));
+      } else {
+        return false
+      }
+    } else {
+      cart.push(product_client);
+      localStorage.setItem("product_client", JSON.stringify(cart));
+    }
+  } return true
+} 
+//------------------------------------------------------------
+
+function excessQuantity(){
+  document.querySelector(".excess__quantity").textContent = "La quantité total d'un même article ne peux dépasser 100";
+  styleError()
 }

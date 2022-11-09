@@ -1,22 +1,23 @@
-const KanapAPI = "http://localhost:3000/api/products";
-const addArticle = document.querySelector('#items');
+let items_container = document.querySelector(".items");
 
-// Requete API des informations des produits
-fetch(KanapAPI)
-//demande de repones au format JSON
-    .then((res) => res.json())
-    .then ((productsRes) => {
-        for (let product of productsRes) {
-            // Insertion des produits sur la page d'acceuil
-            const newProduct = document.createElement("a");
-            newProduct.setAttribute("href",`product.html?id=${product._id}`);
-            newProduct.innerHTML = `
-            <article>
-            <img src="${product.imageUrl}" alt="${product.altTxt}">
-            <h3 class="">${product.name}</h3>
-            <p class="productDescription">${product.description}</p>
-          </article>`;
-          addArticle.appendChild(newProduct);
-        };
-    }
-);
+// Récupérer les données de l'api
+fetch(`http://localhost:3000/api/products`)
+  .then((products) => products.json())
+  .then((products) => {
+    displayProducts(products);
+  });
+
+//Création des élèments + rajout des données dans ces balises
+function displayProducts(products) {
+  items_container.innerHTML = "";
+  for (let i = 0; i < products.length; i++) {
+    items_container.innerHTML += `
+    <a href="./product.html?_id=${products[i]._id}"> 
+      <article>
+        <img src="${products[i].imageUrl}" alt="${products[i].altTxt}">
+        <h3 class="productName">${products[i].name}</h3> 
+        <p class="productDescription">${products[i].description}</p>
+      </article>
+    </a>`;
+  }
+}
