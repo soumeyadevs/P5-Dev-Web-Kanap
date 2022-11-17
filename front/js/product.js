@@ -6,8 +6,8 @@ fetch(`http://localhost:3000/api/products/` + product_id)
   .then((product) => product.json()) 
   .then((product) => {
     displayProductInfos(product);
-    listenColorsEvent();
-    listenQuantityEvent();
+    // listenColorsEvent();
+    // listenQuantityEvent();
   });
 
 // Initialisation de l'object product_client
@@ -40,25 +40,25 @@ function displayProductInfos(product) {
 //------------------------------------------------------------
 
 // Récuperer la valeur de couleur quand celle ci-change
-function listenColorsEvent() {
-  product_colors.addEventListener("change", (event) => {
-    product_client.color = event.target.value;
-    if(product_client.color != 0){
-      document.querySelector(".color__miss").textContent = "";
-    }
-  });
-}
+// function listenColorsEvent() {
+//   product_colors.addEventListener("change", (event) => {
+//     product_client.color = event.target.value;
+//     if(product_client.color != 0){
+//       document.querySelector(".color__miss").textContent = "";
+//     }
+//   });
+// }
 //------------------------------------------------------------
 
 // Récuperer la value de quantité quand elle change
-function listenQuantityEvent() {
-  product_nb.addEventListener("change", (event) => {
-    product_client.quantity = parseInt(event.target.value);
-    if(product_client.quantity != 0){
-      document.querySelector(".quantity__miss").textContent = "";
-    }
-  });
-}
+// function listenQuantityEvent() {
+//   product_nb.addEventListener("change", (event) => {
+//     product_client.quantity = parseInt(event.target.value);
+//     if(product_client.quantity != 0){
+//       document.querySelector(".quantity__miss").textContent = "";
+//     }
+//   });
+// }
 //------------------------------------------------------------
 
 // Click sur le bouton ajouter au panier
