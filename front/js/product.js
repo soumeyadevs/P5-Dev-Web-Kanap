@@ -8,14 +8,15 @@ fetch(`http://localhost:3000/api/products/` + product_id)
     displayProductInfos(product);
     // listenColorsEvent();
     // listenQuantityEvent();
-  });
+  }).catch((Error) => {console.log(Error)});
 
 // Initialisation de l'object product_client
-let product_client = { 
+/*let product_client = { 
   id : product_id,
   color : "",
   quantity : 0
-};
+};*/
+
 
 // Déclaration des selectors
 let product_img = document.querySelector(".item__img");
@@ -24,7 +25,7 @@ let product_price = document.querySelector("#price");
 let product_description = document.querySelector("#description");
 let product_colors = document.querySelector("#colors");
 let product_nb = document.querySelector("#quantity");
-let color_miss = document.querySelector(".item__content");
+//let color_miss = document.querySelector(".item__content");
 
 
 // Afficher les informations du produit avec une boucle for pour les couleurs
@@ -64,6 +65,12 @@ function displayProductInfos(product) {
 // Click sur le bouton ajouter au panier
 let add_cart = document.querySelector("#addToCart");
 add_cart.addEventListener("click", () => {
+  let product_client = { 
+    id : product_id,
+    name : document.getElementById('title').textContent,
+    color : document.getElementById('colors').value,
+    quantity : Number(document.getElementById('quantity').value),
+  };
   verifyInput(product_client);
 });
 //------------------------------------------------------------
@@ -79,9 +86,9 @@ function verifyInput(product_client) {
   } else {
     if (addLs(product_client)) {
       alert("Votre commande viens d'etre ajoutée au panier")
-    } else {
+    }/* else {
       excessQuantity();
-    }
+    }*/
   }
 }
 //------------------------Local storage------------------------------------
@@ -120,7 +127,8 @@ function addLs(product_client) {
 } 
 //------------------------------------------------------------
 
-function excessQuantity(){
+/*function excessQuantity(){
   document.querySelector(".excess__quantity").textContent = "La quantité total d'un même article ne peux dépasser 100";
   styleError()
 }
+*/

@@ -1,20 +1,38 @@
 let cart = JSON.parse(localStorage.getItem("product_client"));
+let totalttc = 0;
+let totalarticles = 0;
 
+if(cart !== null){
+  for(let product of cart){
+    fetch(`http://localhost:3000/api/products/`+ product.id)
+    .then((res) => res.json())
+    .then((apiData) => {
+      displayProducts(apiData,product);
+      deleteEventProduct(apiData,product);
+      updateEventProduct();
+    });
+  }
 
-
-for(let product of cart){
-  fetch(`http://localhost:3000/api/products/`+ product.id)
-  .then((res) => res.json())
-  .then((apiData) => {
-    displayProducts(apiData,product);
-    deleteEventProduct(apiData,product);
-    updateEventProduct();
-  });
+  
 }
 
 
 
 function displayProducts(apiData,productData) {
+
+    /* Mise à jour du total ttc commande */
+    totalttc += (parseFloat(apiData.price) * parseInt(productData.quantity));
+    //console.log('Total TTC', totalttc);
+
+    /* Mise à jour du total quantité produit */
+    totalarticles += parseInt(productData.quantity);
+
+    /* intégration du total ttc dans la page panier */
+    document.querySelector('#totalPrice').innerText = totalttc;
+
+    /* intégration du total qté dans la page panier */
+    document.querySelector('#totalQuantity').innerText = totalarticles;
+
     let cart_items = document.querySelector("#cart__items");
     cart_items.innerHTML += 
         `<article class="cart__item" data-id="${apiData._id}" data-color="${productData.color}">
@@ -30,10 +48,10 @@ function displayProducts(apiData,productData) {
         <div class="cart__item__content__settings">
           <div class="cart__item__content__settings__quantity">
             <p>Qté : </p>
-            <input type="number" data-id="${apiData._id}" class="itemQuantity" name="itemQuantity" min="1" max="100" value="${productData.quantity}">
+            <input type="number" data-id="${apiData._id}" data-color="${productData.color}" class="itemQuantity" name="itemQuantity" min="1" max="100" value="${productData.quantity}">
           </div>
           <div class="cart__item__content__settings__delete">
-            <p class="deleteItem" data-id="${apiData._id}">Supprimer</p>
+            <p class="deleteItem" data-id="${apiData._id}" data-color="${productData.color}">Supprimer</p>
           </div>
         </div>
       </div>
@@ -41,12 +59,26 @@ function displayProducts(apiData,productData) {
 }
 
 function updateEventProduct(){
-  // console.log(Array.from(document.querySelectorAll('#cart__items p.deleteItem')));
+  let newProduct = [];
   Array.from(document.querySelectorAll('.itemQuantity')).forEach((element) =>{
     element.addEventListener('change', (el) => {
+      
        const idProduct = el.target.dataset.id;
-       console.log('Element qté modifié', idProduct);
-       /* reste à faire la mise à jour de la localstorage + reload de la page (window.location.reload();)*/
+       const colorProduct = el.target.dataset.color;
+       const qtyProduct = el.target.value;
+
+      /* On parcours l'ensemble du tableau product pour supprimer l'id produit + couleur correspondant */
+      cart.forEach(elt => {
+        if((elt.id === idProduct) && (elt.color === colorProduct)){
+          newProduct.push({color:elt.color, id:elt.id, name:elt.name, quantity:qtyProduct});
+        }else{
+          newProduct.push(elt);
+        }
+      });
+
+      /* Mise à jour de la localstorage */
+      localStorage.setItem("product_client", JSON.stringify(newProduct));
+      window.location.reload();
        
     });
   });
@@ -54,28 +86,34 @@ function updateEventProduct(){
 }
 
 function deleteEventProduct(apiData,product){
-  // console.log(Array.from(document.querySelectorAll('#cart__items p.deleteItem')));
+  let newProduct = [];
   Array.from(document.querySelectorAll('.deleteItem')).forEach((element) =>{
     element.addEventListener('click', (el) => {
       const idProduct = el.target.dataset.id;
-      console.log('Element supprimé et cliqué', idProduct);
-      /* reste à faire la mise à jour de la localstorage + reload de la page (window.location.reload();)*/
-      // Récupération des élements DOM liées à son articles
-      const buttonDelete = document.querySelector(`[data-id="${product._id}"][data-color="${product.color}"] .deleteItem`);
-      const delArticle = document.querySelector(`[data-id="${product._id}"][data-color="${product.color}"]`);
-      const qtyInput = document.querySelector(`[data-id="${product._id}"][data-color="${product.color}"] .itemQuantity`);
+      const colorProduct = el.target.dataset.color;
+      //console.log('Element supprimé et cliqué', idProduct);
 
-      // séléction de l'id du produit qui va étre supprimer en cliquant sur le btn
-      let id_selectionner_suppression = apiData.idProduct
-      //avec la methode filter je séléctionne les éléments à garder et je supprime l'élement ou le bouton a été cliqué
-      let elementSuppression = apiData.filter( el => el.idProduct !== id_selectionner_suppression);
-      console.log(elementSuppression);
+      /* On parcours l'ensemble du tableau product pour supprimer l'id produit + couleur correspondant */
+      cart.forEach(elt => {
+        if((elt.id === idProduct) && (elt.color === colorProduct)){
+          //console.log('Produit supprimé');
+        }else{
+          newProduct.push(elt);
+        }
+      });
+
+      /* Mise à jour de la localstorage */
+      localStorage.setItem("product_client", JSON.stringify(newProduct));
+      window.location.reload();
+      
     });
   });
+
+
     
 }
 
-//----------------------------------------------------F O R M U L AI R E ----------------------------------
+//---------------------------------------------------- F O R M U L AI R E ----------------------------------
 
 // Gestion du formulaire et de l'envoie vers la page confirmation
 
