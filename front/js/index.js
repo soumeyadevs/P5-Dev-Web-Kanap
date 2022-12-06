@@ -5,7 +5,7 @@ fetch(`http://localhost:3000/api/products`)
   .then((products) => products.json())
   .then((products) => {
     displayProducts(products);
-  });
+  }).catch((Error) => {console.log(Error)});
 
 //Création des élèments + rajout des données dans ces balises
 function displayProducts(products) {

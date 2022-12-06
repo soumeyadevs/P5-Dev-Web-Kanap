@@ -10,7 +10,7 @@ if(cart !== null){
       displayProducts(apiData,product);
       deleteEventProduct(apiData,product);
       updateEventProduct();
-    });
+    }).catch((Error) => {console.log(Error)});
   }
 
   

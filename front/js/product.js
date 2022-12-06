@@ -38,28 +38,7 @@ function displayProductInfos(product) {
     product_colors.innerHTML += `<option value="${product.colors[i]}">${product.colors[i]}</option>`;
   }
 }
-//------------------------------------------------------------
 
-// Récuperer la valeur de couleur quand celle ci-change
-// function listenColorsEvent() {
-//   product_colors.addEventListener("change", (event) => {
-//     product_client.color = event.target.value;
-//     if(product_client.color != 0){
-//       document.querySelector(".color__miss").textContent = "";
-//     }
-//   });
-// }
-//------------------------------------------------------------
-
-// Récuperer la value de quantité quand elle change
-// function listenQuantityEvent() {
-//   product_nb.addEventListener("change", (event) => {
-//     product_client.quantity = parseInt(event.target.value);
-//     if(product_client.quantity != 0){
-//       document.querySelector(".quantity__miss").textContent = "";
-//     }
-//   });
-// }
 //------------------------------------------------------------
 
 // Click sur le bouton ajouter au panier
