@@ -1,4 +1,4 @@
-// Récuperer l'id du produit
+// Récuperer l'id du produit avec la methode GET de l'interface URLsearchparams
 let product_id = new URLSearchParams(window.location.search).get("_id");
 
 // Récupérer la donnée du produit grâce à son id
@@ -6,16 +6,7 @@ fetch(`http://localhost:3000/api/products/` + product_id)
   .then((product) => product.json()) 
   .then((product) => {
     displayProductInfos(product);
-    // listenColorsEvent();
-    // listenQuantityEvent();
   }).catch((Error) => {console.log(Error)});
-
-// Initialisation de l'object product_client
-/*let product_client = { 
-  id : product_id,
-  color : "",
-  quantity : 0
-};*/
 
 
 // Déclaration des selectors
@@ -25,7 +16,6 @@ let product_price = document.querySelector("#price");
 let product_description = document.querySelector("#description");
 let product_colors = document.querySelector("#colors");
 let product_nb = document.querySelector("#quantity");
-//let color_miss = document.querySelector(".item__content");
 
 
 // Afficher les informations du produit avec une boucle for pour les couleurs
@@ -65,9 +55,7 @@ function verifyInput(product_client) {
   } else {
     if (addLs(product_client)) {
       alert("Votre commande viens d'etre ajoutée au panier")
-    }/* else {
-      excessQuantity();
-    }*/
+    }
   }
 }
 //------------------------Local storage------------------------------------
@@ -80,7 +68,7 @@ function verifyInput(product_client) {
  * Si le produit n'est pas présent dans le localStorage il l'ajoute directement dans le ls
  */
 //Déclaration de la variable ''cart'' dans laquelle on met la clé et les valeurs qui sont dans le LS
-// JSON.parse : pour convertir les données au format JSON qui sont dans le LS en objet JS
+
 function addLs(product_client) {
   let cart = JSON.parse(localStorage.getItem("product_client")); // console.log(cart);
  
@@ -105,9 +93,3 @@ function addLs(product_client) {
   } return true
 } 
 //------------------------------------------------------------
-
-/*function excessQuantity(){
-  document.querySelector(".excess__quantity").textContent = "La quantité total d'un même article ne peux dépasser 100";
-  styleError()
-}
-*/
