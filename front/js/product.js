@@ -61,12 +61,6 @@ function verifyInput(product_client) {
 //------------------------Local storage------------------------------------
 
 // Ajouter le produit au ls et ajoute uniquement la quantité si le produit y est déjà
-/**
- * Ajout de la quantité si le produit est déjà présent dans le localStorage
- * get_article récupère le localStorage et vérifie si le produit choisi est déjà présent dans le ls
- * Si il est déjà présent ajout de get_article.quantity à product_client.quantity
- * Si le produit n'est pas présent dans le localStorage il l'ajoute directement dans le ls
- */
 //Déclaration de la variable ''cart'' dans laquelle on met la clé et les valeurs qui sont dans le LS
 
 function addLs(product_client) {
